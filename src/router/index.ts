@@ -5,9 +5,14 @@ import {sharedRoutes} from "@/features/shared/routes.ts";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    ...homeRoutes,
-
-    ...sharedRoutes,
+    {
+      path: '/',
+      component: () => import('@/layouts/MainLayout.vue'),
+      children: [
+        ...homeRoutes,
+        ...sharedRoutes,
+      ]
+    }
   ],
 })
 
