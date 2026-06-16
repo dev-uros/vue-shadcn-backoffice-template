@@ -2,16 +2,17 @@
 import type { SidebarProps } from '@/components/ui/sidebar'
 
 import {
+  Activity,
   AudioWaveform,
   BookOpen,
   Bot,
   Command,
   Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  GalleryVerticalEnd, Gauge,
+  Map, Megaphone, Package,
+  PieChart, Server,
+  Settings2, ShieldCheck,
+  SquareTerminal, Users, Wrench, Zap,
 } from "@lucide/vue"
 import NavMain from '@/components/NavMain.vue'
 import NavProjects from '@/components/NavProjects.vue'
@@ -42,120 +43,127 @@ const data = {
       name: "Acme Inc",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
+    }
   ],
-  navMain: [
+  navAdministration: [
     {
-      title: "Playground",
+      title: "Korisnici",
       url: "#",
-      icon: SquareTerminal,
-      isActive: true,
+      icon: Users,
+
       items: [
         {
-          title: "History",
+          title: "Pregled",
           url: "#",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Kreiraj",
           url: "#",
         },
       ],
     },
   ],
-  projects: [
+  navOperations: [
     {
-      name: "Design Engineering",
+      title: "Procesi",
       url: "#",
-      icon: Frame,
+      icon: Activity,
+      items: [
+        { title: "Aktivni zadaci", url: "#" },
+        { title: "Zakašnjeli procesi", url: "#" },
+        { title: "Radni tokovi", url: "#" },
+        { title: "Arhiva izvršenja", url: "#" },
+      ],
     },
     {
-      name: "Sales & Marketing",
+      title: "Resursi",
+      url: "#",
+      icon: Server,
+      items: [
+        { title: "Serveri", url: "#" },
+        { title: "Baze podataka", url: "#" },
+        { title: "Kontejneri", url: "#" },
+        { title: "Mrežna konfiguracija", url: "#" },
+      ],
+    },
+    {
+      title: "Automatizacija",
+      url: "#",
+      icon: Zap,
+      items: [
+        { title: "Cron poslovi", url: "#" },
+        { title: "Webhook-ovi", url: "#" },
+        { title: "Skripte", url: "#" },
+        { title: "Triggeri", url: "#" },
+      ],
+    },
+    {
+      title: "Monitoring",
+      url: "#",
+      icon: Gauge,
+      items: [
+        { title: "Status uživo", url: "#" },
+        { title: "Logs viewer", url: "#" },
+        { title: "Upozorenja (Alerts)", url: "#" },
+        { title: "Dijagnostika", url: "#" },
+      ],
+    },
+    {
+      title: "Održavanje",
+      url: "#",
+      icon: Wrench,
+      items: [
+        { title: "System Health", url: "#" },
+        { title: "Update menadžer", url: "#" },
+        { title: "Backup & Restore", url: "#" },
+        { title: "Čišćenje keša", url: "#" },
+      ],
+    },
+  ],
+  navReports: [
+    {
+      title: "Analitika",
       url: "#",
       icon: PieChart,
+      items: [
+        { title: "Pregled prodaje", url: "#" },
+        { title: "Korisničke sesije", url: "#" },
+        { title: "Konverzije", url: "#" },
+        { title: "Povrat investicije", url: "#" },
+      ],
     },
     {
-      name: "Travel",
+      title: "Inventar",
       url: "#",
-      icon: Map,
+      icon: Package,
+      items: [
+        { title: "Svi proizvodi", url: "#" },
+        { title: "Niske zalihe", url: "#" },
+        { title: "Kategorije", url: "#" },
+        { title: "Dobavljači", url: "#" },
+      ],
+    },
+    {
+      title: "Marketing",
+      url: "#",
+      icon: Megaphone,
+      items: [
+        { title: "Kampanje", url: "#" },
+        { title: "Newsletteri", url: "#" },
+        { title: "SEO pregled", url: "#" },
+        { title: "Analiza društvenih mreža", url: "#" },
+      ],
+    },
+    {
+      title: "Sigurnost",
+      url: "#",
+      icon: ShieldCheck,
+      items: [
+        { title: "Pristupni logovi", url: "#" },
+        { title: "Korisničke dozvole", url: "#" },
+        { title: "API ključevi", url: "#" },
+        { title: "Backup status", url: "#" },
+      ],
     },
   ],
 }
@@ -167,11 +175,12 @@ const data = {
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="data.navMain" />
-      <NavProjects :projects="data.projects" />
+      <NavMain group-label="Administracija" :items="data.navAdministration" />
+      <NavMain group-label="Operacije" :items="data.navOperations" />
+      <NavMain group-label="Izveštaji" :items="data.navReports" />
+
     </SidebarContent>
     <SidebarFooter>
-
       <NavUser :user="data.user" />
     </SidebarFooter>
     <SidebarRail />
