@@ -15,6 +15,19 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import ModeToggle from "@/components/ModeToggle.vue";
+import { useRoute } from 'vue-router'
+import {computed} from "vue";
+
+const route = useRoute()
+
+const breadcrumbs = computed(() =>
+  route.matched
+    .filter(r => r.meta?.breadcrumb)
+    .map(r => ({
+      label: r.meta.breadcrumb as string,
+      path: r.path || '/',
+    }))
+)
 </script>
 
 <template>
@@ -30,15 +43,17 @@ import ModeToggle from "@/components/ModeToggle.vue";
           />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem class="hidden md:block">
-                <BreadcrumbLink href="#">
-                  Building Your Application
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator class="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-              </BreadcrumbItem>
+              <template v-for="(crumb, index) in breadcrumbs" :key="crumb.path">
+                <BreadcrumbItem>
+                  <BreadcrumbPage v-if="index === breadcrumbs.length - 1">
+                    {{ crumb.label }}
+                  </BreadcrumbPage>
+                  <BreadcrumbLink v-else :href="crumb.path">
+                    {{ crumb.label }}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator v-if="index < breadcrumbs.length - 1" />
+              </template>
             </BreadcrumbList>
           </Breadcrumb>
           <ModeToggle class="ml-auto"/>
@@ -46,12 +61,13 @@ import ModeToggle from "@/components/ModeToggle.vue";
         </div>
       </header>
       <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div class="bg-muted/50 aspect-video rounded-xl" />
-          <div class="bg-muted/50 aspect-video rounded-xl" />
-          <div class="bg-muted/50 aspect-video rounded-xl" />
-        </div>
-        <div class="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+        <RouterView />
+<!--        <div class="grid auto-rows-min gap-4 md:grid-cols-3">-->
+<!--          <div class="bg-muted/50 aspect-video rounded-xl" />-->
+<!--          <div class="bg-muted/50 aspect-video rounded-xl" />-->
+<!--          <div class="bg-muted/50 aspect-video rounded-xl" />-->
+<!--        </div>-->
+<!--        <div class="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />-->
       </div>
 
     </SidebarInset>
