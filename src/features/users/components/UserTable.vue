@@ -62,5 +62,6 @@ const bulkActions: DataTableBulkAction<UserRow>[] = [
     :rowActions="rowActions"
     :bulkActions="bulkActions"
     searchPlaceholder="Pretraga po imenu ili emailu..."
+    :pageSizeOptions="[10, 20, 50, 100]"
   />
 </template>

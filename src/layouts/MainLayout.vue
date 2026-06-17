@@ -20,14 +20,7 @@ import {computed} from "vue";
 
 const route = useRoute()
 
-const breadcrumbs = computed(() =>
-  route.matched
-    .filter(r => r.meta?.breadcrumb)
-    .map(r => ({
-      label: r.meta.breadcrumb as string,
-      path: r.path || '/',
-    }))
-)
+const breadcrumbs = computed(() => route.meta.breadcrumb ?? [])
 </script>
 
 <template>

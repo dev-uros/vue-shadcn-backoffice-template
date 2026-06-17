@@ -5,6 +5,6 @@ export const homeRoutes: RouteRecordRaw[] = [
     name: 'home',
     path: '/',
     component: () => import('./pages/HomePage.vue'),
-    meta: {breadcrumb: 'Početna'}
+    meta: {breadcrumb: [{label: 'Početna', path: '/'}]}
   }
 ]

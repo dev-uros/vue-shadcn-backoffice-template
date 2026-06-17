@@ -2,6 +2,7 @@
 import { ref, h, computed } from 'vue'
 import {
   type ColumnDef,
+  type PaginationState,
   type SortingState,
   FlexRender,
   getCoreRowModel,
@@ -31,6 +32,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export interface DataTableColumn<T> {
   key: keyof T & string
@@ -62,7 +70,10 @@ const props = defineProps<{
   bulkActions?: DataTableBulkAction<T>[]
   searchPlaceholder?: string
   pageSize?: number
+  pageSizeOptions?: number[]
 }>()
+
+const pageSizeOptions = computed(() => props.pageSizeOptions ?? [5, 10, 25, 50])
 
 function sortIcon(sorted: false | 'asc' | 'desc') {
   if (sorted === 'asc') return ArrowUp
@@ -85,7 +96,7 @@ const tableColumns = computed<ColumnDef<T>[]>(() => {
 
   cols.push({
     id: 'select',
-    meta: { align: 'center' },
+    meta: { align: 'center' } as never,
     header: ({ table }) =>
       h(Checkbox, {
         modelValue: table.getIsAllPageRowsSelected()
@@ -106,7 +117,7 @@ const tableColumns = computed<ColumnDef<T>[]>(() => {
   for (const col of props.columns) {
     cols.push({
       accessorKey: col.key,
-      meta: { align: col.align },
+      meta: { align: col.align } as never,
       header: col.sortable
         ? ({ column }) =>
           h(Button, {
@@ -122,7 +133,7 @@ const tableColumns = computed<ColumnDef<T>[]>(() => {
   if (props.rowActions?.length) {
     cols.push({
       id: 'actions',
-      meta: { align: 'right' },
+      meta: { align: 'right' } as never,
       enableHiding: false,
       cell: ({ row }) =>
         h(DropdownMenu, {}, {
@@ -154,6 +165,10 @@ const tableColumns = computed<ColumnDef<T>[]>(() => {
 const sorting = ref<SortingState>([])
 const globalFilter = ref('')
 const rowSelection = ref({})
+const pagination = ref<PaginationState>({
+  pageIndex: 0,
+  pageSize: props.pageSize ?? 10,
+})
 
 const table = useVueTable({
   get data() { return props.data },
@@ -162,9 +177,7 @@ const table = useVueTable({
     get sorting() { return sorting.value },
     get globalFilter() { return globalFilter.value },
     get rowSelection() { return rowSelection.value },
-  },
-  initialState: {
-    pagination: { pageSize: props.pageSize ?? 10 },
+    get pagination() { return pagination.value },
   },
   onSortingChange: (u) => {
     sorting.value = typeof u === 'function' ? u(sorting.value) : u
@@ -174,6 +187,9 @@ const table = useVueTable({
   },
   onRowSelectionChange: (u) => {
     rowSelection.value = typeof u === 'function' ? u(rowSelection.value) : u
+  },
+  onPaginationChange: (u) => {
+    pagination.value = typeof u === 'function' ? u(pagination.value) : u
   },
   getCoreRowModel: getCoreRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
@@ -193,6 +209,19 @@ const selectedRows = computed(() => table.getFilteredSelectedRowModel().rows.map
 function runBulkAction(action: DataTableBulkAction<T>) {
   action.onClick(selectedRows.value)
   rowSelection.value = {}
+}
+
+const ALL_SENTINEL = Number.MAX_SAFE_INTEGER
+
+const pageSizeValue = computed(() =>
+  pagination.value.pageSize === ALL_SENTINEL ? 'all' : String(pagination.value.pageSize)
+)
+
+function setPageSize(value: string) {
+  pagination.value = {
+    pageIndex: 0,
+    pageSize: value === 'all' ? ALL_SENTINEL : Number(value),
+  }
 }
 </script>
 
@@ -238,7 +267,7 @@ function runBulkAction(action: DataTableBulkAction<T>) {
             <TableHead
               v-for="header in headerGroup.headers"
               :key="header.id"
-              :class="alignClass(header.column.columnDef.meta?.align)"
+              :class="alignClass((header.column.columnDef.meta as any)?.align)"
             >
               <FlexRender
                 v-if="!header.isPlaceholder"
@@ -258,7 +287,7 @@ function runBulkAction(action: DataTableBulkAction<T>) {
               <TableCell
                 v-for="cell in row.getVisibleCells()"
                 :key="cell.id"
-                :class="alignClass(cell.column.columnDef.meta?.align)"
+                :class="alignClass((cell.column.columnDef.meta as any)?.align)"
               >
                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
               </TableCell>
@@ -277,16 +306,33 @@ function runBulkAction(action: DataTableBulkAction<T>) {
       <div class="text-sm text-muted-foreground">
         {{ selectedCount }} od {{ table.getFilteredRowModel().rows.length }} redova selektovano.
       </div>
-      <div class="flex items-center gap-2">
-        <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
-          Prethodna
-        </Button>
-        <span class="text-sm text-muted-foreground px-2">
-          Strana {{ table.getState().pagination.pageIndex + 1 }} od {{ table.getPageCount() }}
-        </span>
-        <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
-          Sledeća
-        </Button>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-muted-foreground">Redova po strani</span>
+          <Select :model-value="pageSizeValue" @update:model-value="(v: number) => setPageSize(String(v))">
+            <SelectTrigger class="h-8 w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="size in pageSizeOptions" :key="size" :value="String(size)">
+                {{ size }}
+              </SelectItem>
+              <SelectItem value="all">Sve</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
+            Prethodna
+          </Button>
+          <span class="text-sm text-muted-foreground px-2">
+            Strana {{ table.getState().pagination.pageIndex + 1 }} od {{ table.getPageCount() }}
+          </span>
+          <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
+            Sledeća
+          </Button>
+        </div>
       </div>
     </div>
   </div>
