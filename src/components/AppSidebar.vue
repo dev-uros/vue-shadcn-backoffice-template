@@ -54,11 +54,11 @@ const data = {
       items: [
         {
           title: "Pregled",
-          url: "#",
+          url: "/users",
         },
         {
           title: "Kreiraj",
-          url: "#",
+          url: "/users/create",
         },
       ],
     },

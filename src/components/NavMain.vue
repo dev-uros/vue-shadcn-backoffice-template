@@ -92,7 +92,7 @@ function onOpenChange(key: string, open: boolean) {
                 :key="subItem.title"
                 as-child
               >
-                <a :href="subItem.url">{{ subItem.title }}</a>
+                <RouterLink :to="subItem.url">{{ subItem.title }}</RouterLink>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -119,11 +119,13 @@ function onOpenChange(key: string, open: boolean) {
             <CollapsibleContent>
               <SidebarMenuSub>
                 <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
-                  <SidebarMenuSubButton as-child>
-                    <a :href="subItem.url">
-                      <span>{{ subItem.title }}</span>
-                    </a>
-                  </SidebarMenuSubButton>
+                  <RouterLink :to="subItem.url" custom v-slot="{ isActive, navigate, href }">
+                    <SidebarMenuSubButton as-child :is-active="isActive">
+                      <a :href="href" @click="navigate">
+                        <span>{{ subItem.title }}</span>
+                      </a>
+                    </SidebarMenuSubButton>
+                  </RouterLink>
                 </SidebarMenuSubItem>
               </SidebarMenuSub>
             </CollapsibleContent>
