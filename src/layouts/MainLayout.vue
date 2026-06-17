@@ -41,8 +41,8 @@ const breadcrumbs = computed(() => route.meta.breadcrumb ?? [])
                   <BreadcrumbPage v-if="index === breadcrumbs.length - 1">
                     {{ crumb.label }}
                   </BreadcrumbPage>
-                  <BreadcrumbLink v-else :href="crumb.path">
-                    {{ crumb.label }}
+                  <BreadcrumbLink v-else as-child>
+                    <RouterLink :to="crumb.path!">{{ crumb.label }}</RouterLink>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator v-if="index < breadcrumbs.length - 1" />
