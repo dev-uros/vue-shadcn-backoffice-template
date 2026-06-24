@@ -3,19 +3,12 @@ import type { SidebarProps } from '@/components/ui/sidebar'
 
 import {
   Activity,
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd, Gauge,
-  Map, Megaphone, Package,
+  GalleryVerticalEnd, Gauge, Megaphone, Package,
   PieChart, Server,
-  Settings2, ShieldCheck,
-  SquareTerminal, Users, Wrench, Zap,
+   ShieldCheck,
+   Users, Wrench, Zap,
 } from "@lucide/vue"
 import NavMain from '@/components/NavMain.vue'
-import NavProjects from '@/components/NavProjects.vue'
 import NavUser from '@/components/NavUser.vue'
 import TeamSwitcher from '@/components/TeamSwitcher.vue'
 
@@ -26,7 +19,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import {useRouter} from "vue-router";
 
+const router = useRouter();
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 })
@@ -167,12 +162,17 @@ const data = {
     },
   ],
 }
+const goHome = () => {
+  router.push({
+    name: 'home'
+  })
+}
 </script>
 
 <template>
   <Sidebar v-bind="props">
     <SidebarHeader>
-      <TeamSwitcher :teams="data.teams" />
+      <TeamSwitcher @click="goHome" :teams="data.teams" />
     </SidebarHeader>
     <SidebarContent>
       <NavMain group-label="Administracija" :items="data.navAdministration" />
